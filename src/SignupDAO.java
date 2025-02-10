@@ -26,7 +26,7 @@ public class SignupDAO {
             }
 
             // Insert new user into the database
-            String insertQuery = "INSERT INTO users (firstname, lastname, email, password) VALUES (?, ?, ?, ?)";
+            String insertQuery = "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
             stmt = conn.prepareStatement(insertQuery);
             stmt.setString(1, firstName);
             stmt.setString(2, lastName);

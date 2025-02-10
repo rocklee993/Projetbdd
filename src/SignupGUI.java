@@ -115,9 +115,23 @@ public class SignupGUI extends JFrame {
             return;
         }
 
-        // Simulate user registration logic (you can link this to the DAO later)
-        outputArea.setText("✅ Inscription réussie!");
+        // Validate email format (simple validation)
+        if (!email.contains("@")) {
+            outputArea.setText("❌ L'email est invalide.");
+            return;
+        }
+
+        // Call the SignupDAO to register the user in the database
+        boolean success = SignupDAO.registerUser(firstName, lastName, email, password);
+
+        // Check if registration was successful
+        if (success) {
+            outputArea.setText("✅ Inscription réussie!");
+        } else {
+            outputArea.setText("❌ L'email est déjà utilisé.");
+        }
     }
+
 
     public static void main(String[] args) {
         new SignupGUI();
