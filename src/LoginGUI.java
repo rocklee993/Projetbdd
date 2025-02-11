@@ -94,13 +94,22 @@ public class LoginGUI extends JFrame {
         String email = emailField.getText();
         String password = new String(passwordField.getPassword());
 
-        // Check credentials using LoginDAO
-        if (LoginDAO.verifyUser(email, password)) {
-            outputArea.setText("Connexion réussie! Bienvenue.");
+        // Get role from LoginDAO
+        String role = LoginDAO.verifyUser(email, password);
+
+        if (role.equals("admin")) {
+            outputArea.setText("✅ Connexion réussie en tant qu'Admin!");
+            new VolGUI(); // Open VolGUI for admin
+            dispose(); // Close LoginGUI
+        } else if (role.equals("user")) {
+            outputArea.setText("✅ Connexion réussie!");
+            new ReservationGUI(); // Open user dashboard (Replace with actual class)
+            dispose(); // Close LoginGUI
         } else {
             outputArea.setText("❌ Identifiants incorrects, réessayez.");
         }
     }
+
 
     public static void main(String[] args) {
         new LoginGUI();
