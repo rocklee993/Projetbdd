@@ -3,11 +3,47 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * The SignupGUI class represents the graphical user interface for user registration.
+ * It allows a user to input their personal details (first name, last name, email, password),
+ * validate the data, and register by interacting with the interface.
+ */
 public class SignupGUI extends JFrame {
-    private JTextField firstNameField, lastNameField, emailField;
-    private JPasswordField passwordField, confirmPasswordField;
-    private JTextArea outputArea;
+	/**
+	 * Text field for the user to input their first name during registration.
+	 */
+	private JTextField firstNameField;
 
+	/**
+	 * Text field for the user to input their last name during registration.
+	 */
+	private JTextField lastNameField;
+
+	/**
+	 * Text field for the user to input their email address during registration.
+	 */
+	private JTextField emailField;
+
+	/**
+	 * Password field for the user to input their password during registration.
+	 */
+	private JPasswordField passwordField;
+
+	/**
+	 * Password field for the user to confirm their password during registration.
+	 */
+	private JPasswordField confirmPasswordField;
+
+	/**
+	 * Text area to display output messages (e.g., registration success or error messages).
+	 */
+	private JTextArea outputArea;
+
+
+    /**
+     * Constructor for the SignupGUI class. It initializes the window layout, including the header,
+     * form fields for user input, a sign-up button, and an output area for displaying results or errors.
+     */
     public SignupGUI() {
         setTitle("S'inscrire");
         setSize(500, 500);
@@ -86,7 +122,11 @@ public class SignupGUI extends JFrame {
         setVisible(true);
     }
 
-    // Action for signup
+    /**
+     * Action performed when the user clicks the sign-up button.
+     * This method validates the input fields, checks if passwords match, validates email format,
+     * and calls the SignupDAO to attempt registering the user.
+     */
     private void signupAction() {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
@@ -126,5 +166,15 @@ public class SignupGUI extends JFrame {
         } else {
             outputArea.setText("❌ L'email est déjà utilisé.");
         }
+    }
+
+    /**
+     * Main method to launch the SignupGUI application.
+     * Creates a new instance of the SignupGUI class to display the registration interface.
+     *
+     * @param args command-line arguments (not used)
+     */
+    public static void main(String[] args) {
+        new SignupGUI(); // Launch the GUI application
     }
 }

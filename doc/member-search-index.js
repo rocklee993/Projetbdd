@@ -1,1 +1,1 @@
-memberSearchIndex = [{"p":"<Unnamed>","c":"LoginGUI","l":"LoginGUI()","u":"%3Cinit%3E()"},{"p":"<Unnamed>","c":"LoginGUI","l":"main(String[])","u":"main(java.lang.String[])"}];updateSearchResults();
+memberSearchIndex = [{"p":"<Unnamed>","c":"LoginDAO","l":"LoginDAO()","u":"%3Cinit%3E()"},{"p":"<Unnamed>","c":"LoginDAO","l":"verifyUser(String, String)","u":"verifyUser(java.lang.String,java.lang.String)"}];updateSearchResults();

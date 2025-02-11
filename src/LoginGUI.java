@@ -4,9 +4,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class LoginGUI extends JFrame {
-    private JTextField emailField;
-    private JPasswordField passwordField;
-    private JTextArea outputArea;
+	/**
+	 * Text field for the user to enter their email address during login.
+	 */
+	private JTextField emailField; 
+
+	/**
+	 * Password field for the user to enter their password during login.
+	 */
+	private JPasswordField passwordField; 
+
+	/**
+	 * Text area to display output messages (e.g., login success or error messages).
+	 */
+	private JTextArea outputArea; 
 
     public LoginGUI() {
         setTitle("Se Connecter");

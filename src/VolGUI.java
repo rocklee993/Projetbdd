@@ -3,12 +3,36 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+/**
+ * VolGUI - A graphical user interface for managing flight information.
+ * This class provides functionalities to add, edit, delete, and display flight records.
+ * It interacts with the backend database using the VolDAO object.
+ */
+/**
+ * Constructs the VolGUI object and initializes the GUI components.
+ * It sets up the layout, input fields, buttons, and the associated actions.
+ */
 
 public class VolGUI extends JFrame {
+    /**
+     * Input fields for the flight information.
+     */
     private JTextField idField, dateDepartField, dateArriveeField, lieuDepartField, lieuArriveeField;
+
+    /**
+     * Area for displaying output messages.
+     */
     private JTextArea outputArea;
+
+    /**
+     * DAO object for interacting with the flight database.
+     */
     private VolDAO volDAO; // DAO for database operations
 
+    /**
+     * Constructs the VolGUI object and initializes the GUI components.
+     * It sets up the layout, input fields, buttons, and the associated actions.
+     */
     public VolGUI() {
         volDAO = new VolDAO(); // Initialize DAO
 
