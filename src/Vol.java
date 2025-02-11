@@ -12,13 +12,18 @@ public class Vol {
     private String lieuDepart; // Lieu de départ
     private String lieuArrivee; // Lieu d'arrivée
 
+    public Vol() {
+        // Required for some frameworks and easier object creation in some cases
+    }
+
+
     /**
      * Constructeur de la classe Vol.
-     * 
-     * @param id Identifiant du vol
-     * @param dateDepart Date et heure de départ
+     *
+     * @param id          Identifiant du vol
+     * @param dateDepart  Date et heure de départ
      * @param dateArrivee Date et heure d'arrivée
-     * @param lieuDepart Lieu de départ
+     * @param lieuDepart  Lieu de départ
      * @param lieuArrivee Lieu d'arrivée
      */
     public Vol(int id, LocalDateTime dateDepart, LocalDateTime dateArrivee, String lieuDepart, String lieuArrivee) {
@@ -31,7 +36,7 @@ public class Vol {
 
     /**
      * Retourne l'identifiant du vol.
-     * 
+     *
      * @return id du vol
      */
     public int getId() {
@@ -40,7 +45,7 @@ public class Vol {
 
     /**
      * Définit l'identifiant du vol.
-     * 
+     *
      * @param id Identifiant du vol
      */
     public void setId(int id) {
@@ -49,7 +54,7 @@ public class Vol {
 
     /**
      * Retourne la date et l'heure de départ.
-     * 
+     *
      * @return date de départ
      */
     public LocalDateTime getDateDepart() {
@@ -58,7 +63,7 @@ public class Vol {
 
     /**
      * Définit la date et l'heure de départ.
-     * 
+     *
      * @param dateDepart Date et heure de départ
      */
     public void setDateDepart(LocalDateTime dateDepart) {
@@ -67,7 +72,7 @@ public class Vol {
 
     /**
      * Retourne la date et l'heure d'arrivée.
-     * 
+     *
      * @return date d'arrivée
      */
     public LocalDateTime getDateArrivee() {
@@ -76,7 +81,7 @@ public class Vol {
 
     /**
      * Définit la date et l'heure d'arrivée.
-     * 
+     *
      * @param dateArrivee Date et heure d'arrivée
      */
     public void setDateArrivee(LocalDateTime dateArrivee) {
@@ -85,7 +90,7 @@ public class Vol {
 
     /**
      * Retourne le lieu de départ.
-     * 
+     *
      * @return lieu de départ
      */
     public String getLieuDepart() {
@@ -94,7 +99,7 @@ public class Vol {
 
     /**
      * Définit le lieu de départ.
-     * 
+     *
      * @param lieuDepart Lieu de départ
      */
     public void setLieuDepart(String lieuDepart) {
@@ -103,7 +108,7 @@ public class Vol {
 
     /**
      * Retourne le lieu d'arrivée.
-     * 
+     *
      * @return lieu d'arrivée
      */
     public String getLieuArrivee() {
@@ -112,7 +117,7 @@ public class Vol {
 
     /**
      * Définit le lieu d'arrivée.
-     * 
+     *
      * @param lieuArrivee Lieu d'arrivée
      */
     public void setLieuArrivee(String lieuArrivee) {
@@ -121,7 +126,7 @@ public class Vol {
 
     /**
      * Calcule et retourne la durée du vol en minutes.
-     * 
+     *
      * @return durée du vol en minutes
      */
     public long getDureeVol() {
@@ -134,6 +139,6 @@ public class Vol {
     @Override
     public String toString() {
         return "Vol [ID: " + id + ", Départ: " + dateDepart + " (" + lieuDepart + "), Arrivée: " + dateArrivee + " ("
-                + lieuArrivee + "), Durée: " + getDureeVol() + " minutes]";
+            + lieuArrivee + "), Durée: " + getDureeVol() + " minutes]";
     }
 }
