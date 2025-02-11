@@ -9,36 +9,13 @@ import java.awt.event.ActionListener;
  * validate the data, and register by interacting with the interface.
  */
 public class SignupGUI extends JFrame {
-	/**
-	 * Text field for the user to input their first name during registration.
-	 */
-	private JTextField firstNameField;
-
-	/**
-	 * Text field for the user to input their last name during registration.
-	 */
-	private JTextField lastNameField;
-
-	/**
-	 * Text field for the user to input their email address during registration.
-	 */
-	private JTextField emailField;
-
-	/**
-	 * Password field for the user to input their password during registration.
-	 */
-	private JPasswordField passwordField;
-
-	/**
-	 * Password field for the user to confirm their password during registration.
-	 */
-	private JPasswordField confirmPasswordField;
-
-	/**
-	 * Text area to display output messages (e.g., registration success or error messages).
-	 */
-	private JTextArea outputArea;
-
+    // Declare input fields and other components
+    private JTextField firstNameField;
+    private JTextField lastNameField;
+    private JTextField emailField;
+    private JPasswordField passwordField;
+    private JPasswordField confirmPasswordField;
+    private JTextArea outputArea;
 
     /**
      * Constructor for the SignupGUI class. It initializes the window layout, including the header,
@@ -105,6 +82,13 @@ public class SignupGUI extends JFrame {
         bottomPanel.add(buttonPanel, BorderLayout.NORTH);
         bottomPanel.add(new JScrollPane(outputArea), BorderLayout.CENTER);
 
+        // "Se connecter" Button to return to LoginGUI
+        JButton loginButton = new JButton("Se connecter");
+        loginButton.setPreferredSize(new Dimension(200, 40));
+        loginButton.setBackground(new Color(245, 66, 66));
+        loginButton.setForeground(Color.WHITE);
+        buttonPanel.add(loginButton); // Add the login button to the button panel
+
         // Add Components to Frame
         setLayout(new BorderLayout());
         add(headerPanel, BorderLayout.NORTH);
@@ -116,6 +100,15 @@ public class SignupGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 signupAction();
+            }
+        });
+
+        // Action listener for the "Se connecter" button
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new LoginGUI(); // Open LoginGUI
+                dispose(); // Close SignupGUI
             }
         });
 

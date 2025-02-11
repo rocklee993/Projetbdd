@@ -3,127 +3,206 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-/**
- * VolGUI - A graphical user interface for managing flight information.
- * This class provides functionalities to add, edit, delete, and display flight records.
- * It interacts with the backend database using the VolDAO object.
- */
-/**
- * Constructs the VolGUI object and initializes the GUI components.
- * It sets up the layout, input fields, buttons, and the associated actions.
- */
 
 public class VolGUI extends JFrame {
-    /**
-     * Input fields for the flight information.
-     */
     private JTextField idField, dateDepartField, dateArriveeField, lieuDepartField, lieuArriveeField;
-
-    /**
-     * Area for displaying output messages.
-     */
     private JTextArea outputArea;
+    private VolDAO volDAO;
+    private Color primaryColor = new Color(0, 206, 209); // Turquoise
 
-    /**
-     * DAO object for interacting with the flight database.
-     */
-    private VolDAO volDAO; // DAO for database operations
-
-    /**
-     * Constructs the VolGUI object and initializes the GUI components.
-     * It sets up the layout, input fields, buttons, and the associated actions.
-     */
     public VolGUI() {
-        volDAO = new VolDAO(); // Initialize DAO
-
+        volDAO = new VolDAO();
         setTitle("Gestion des Vols");
-        setSize(600, 500);
+        setSize(800, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setResizable(false);
+        setLayout(new BorderLayout());
 
-        // Header Panel
-        JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(Color.CYAN);
-        JLabel titleLabel = new JLabel("Gestion des Vols");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        headerPanel.add(titleLabel);
+        // Navigation Bar
+        createNavBar();
 
-        // Input Fields Panel
-        JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
-        panel.setBackground(Color.LIGHT_GRAY);
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Main Panel
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        panel.add(new JLabel("ID du vol:"));
-        idField = new JTextField();
-        panel.add(idField);
+        // Input Panel
+        createInputPanel(mainPanel);
 
-        panel.add(new JLabel("Date Départ (yyyy-MM-dd HH:mm):"));
-        dateDepartField = new JTextField();
-        panel.add(dateDepartField);
+        // Output Area with new styling
+        createOutputArea(mainPanel);
 
-        panel.add(new JLabel("Date Arrivée (yyyy-MM-dd HH:mm):"));
-        dateArriveeField = new JTextField();
-        panel.add(dateArriveeField);
+        add(mainPanel, BorderLayout.CENTER);
+        refreshVolsList();
+        setVisible(true);
+    }
 
-        panel.add(new JLabel("Lieu Départ:"));
-        lieuDepartField = new JTextField();
-        panel.add(lieuDepartField);
+    private void createNavBar() {
+        JPanel navBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        navBar.setBackground(primaryColor);
 
-        panel.add(new JLabel("Lieu Arrivée:"));
-        lieuArriveeField = new JTextField();
-        panel.add(lieuArriveeField);
+        String[] menuItems = {"Gestion des Vols", "Afficher tous les vols", "Déconnexion"};
+        for (String item : menuItems) {
+            JButton btn = createNavButton(item);
+            if (item.equals("Afficher tous les vols")) {
+                btn.setBackground(primaryColor.darker());
+            }
+            navBar.add(btn);
+
+            // Action listeners
+            if (item.equals("Déconnexion")) {
+                btn.addActionListener(e -> logoutAction());
+            } else if (item.equals("Afficher tous les vols")) {
+                btn.addActionListener(e -> openVolGUI());
+            }
+        }
+
+        add(navBar, BorderLayout.NORTH);
+    }
+
+    private void logoutAction() {
+        // Logic to handle logout
+        // For example, you could dispose of the current window and show the login screen.
+        this.dispose(); // Close the current window
+        new LoginGUI(); // Assuming LoginGUI is the class for your login screen
+    }
+
+    private void openVolGUI() {
+        // Logic to open VolGUI
+        // For example, you could dispose of the current window and show the VolGUI screen.
+        this.dispose(); // Close the current window
+        new AfficherVolGUI(); // Assuming VolGUI is the class for your VolGUI
+    }
+
+    private JButton createNavButton(String text) {
+        JButton button = new JButton(text);
+        button.setPreferredSize(new Dimension(150, 40));
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setForeground(Color.WHITE);
+        button.setBackground(primaryColor);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(primaryColor.darker());
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(primaryColor);
+            }
+        });
+
+        return button;
+    }
+
+    private void createInputPanel(JPanel mainPanel) {
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        inputPanel.setBackground(Color.WHITE);
+        inputPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+            BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        // Create styled text fields
+        idField = createStyledTextField();
+        dateDepartField = createStyledTextField();
+        dateArriveeField = createStyledTextField();
+        lieuDepartField = createStyledTextField();
+        lieuArriveeField = createStyledTextField();
+
+        // Add fields to panel
+        addLabelAndField(inputPanel, gbc, "ID du vol", idField, 0);
+        addLabelAndField(inputPanel, gbc, "Date Départ (yyyy-MM-dd HH:mm)", dateDepartField, 1);
+        addLabelAndField(inputPanel, gbc, "Date Arrivée (yyyy-MM-dd HH:mm)", dateArriveeField, 2);
+        addLabelAndField(inputPanel, gbc, "Lieu Départ", lieuDepartField, 3);
+        addLabelAndField(inputPanel, gbc, "Lieu Arrivée", lieuArriveeField, 4);
 
         // Button Panel
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.LIGHT_GRAY);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(Color.WHITE);
 
-        JButton addButton = new JButton("Ajouter");
-        JButton editButton = new JButton("Modifier");
-        JButton deleteButton = new JButton("Supprimer");
-        JButton afficherButton = new JButton("Afficher Vols"); // New button
+        JButton addButton = createStyledButton("Ajouter", new Color(66, 135, 245));
+        JButton editButton = createStyledButton("Modifier", new Color(255, 165, 0));
+        JButton deleteButton = createStyledButton("Supprimer", new Color(220, 20, 60));
 
-        addButton.setBackground(new Color(66, 135, 245));
-        addButton.setForeground(Color.WHITE);
-        editButton.setBackground(new Color(255, 165, 0));
-        editButton.setForeground(Color.WHITE);
-        deleteButton.setBackground(new Color(220, 20, 60));
-        deleteButton.setForeground(Color.WHITE);
-        afficherButton.setBackground(new Color(34, 139, 34)); // Green background
-        afficherButton.setForeground(Color.WHITE);
+        addButton.addActionListener(e -> createVol());
+        editButton.addActionListener(e -> modifyVol());
+        deleteButton.addActionListener(e -> deleteVol());
 
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
-        buttonPanel.add(afficherButton); // Add the new button
 
-        // Output Area
+        gbc.gridx = 0;
+        gbc.gridy = 10;
+        gbc.gridwidth = 2;
+        inputPanel.add(buttonPanel, gbc);
+
+        mainPanel.add(inputPanel, BorderLayout.NORTH);
+    }
+
+    private void createOutputArea(JPanel mainPanel) {
         outputArea = new JTextArea(10, 40);
         outputArea.setEditable(false);
-        outputArea.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        outputArea.setFont(new Font("Arial", Font.PLAIN, 12));
+        outputArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        // Bottom Panel
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setBackground(Color.LIGHT_GRAY);
-        bottomPanel.add(buttonPanel, BorderLayout.NORTH);
-        bottomPanel.add(new JScrollPane(outputArea), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(outputArea);
+        scrollPane.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
 
-        // Add Components to Frame
-        setLayout(new BorderLayout());
-        add(headerPanel, BorderLayout.NORTH);
-        add(panel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        // Button Actions
-        addButton.addActionListener(e -> createVol());
-        editButton.addActionListener(e -> modifyVol());
-        deleteButton.addActionListener(e -> deleteVol());
-        afficherButton.addActionListener(e -> refreshVolsList()); // ActionListener for "Afficher Vols"
-
-        refreshVolsList(); // Display existing flights on startup
-
-        setVisible(true);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
     }
+
+    private JTextField createStyledTextField() {
+        JTextField field = new JTextField();
+        field.setPreferredSize(new Dimension(200, 30));
+        field.setFont(new Font("Arial", Font.PLAIN, 12));
+        return field;
+    }
+
+    private JButton createStyledButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setPreferredSize(new Dimension(120, 30));
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor.darker());
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+
+        return button;
+    }
+
+    private void addLabelAndField(JPanel panel, GridBagConstraints gbc, String labelText, 
+                                JComponent field, int position) {
+        gbc.gridx = position % 2;
+        gbc.gridy = position / 2 * 2;
+        gbc.gridwidth = 1;
+        
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("Arial", Font.BOLD, 12));
+        panel.add(label, gbc);
+
+        gbc.gridy++;
+        panel.add(field, gbc);
+    }
+
+    // Keep the original logic for these methods
+   
 
     private void createVol() {
         try {
@@ -223,7 +302,7 @@ public class VolGUI extends JFrame {
         lieuArriveeField.setText("");
     }
 
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         new VolGUI();
-    }*/
+    }
 }
