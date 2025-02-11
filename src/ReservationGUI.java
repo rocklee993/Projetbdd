@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -28,6 +30,12 @@ public class ReservationGUI extends JFrame { // class is here
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private Color primaryColor = new Color(0, 206, 209);
     private static final String USER_HOME = System.getProperty("user.home");
+    private LoginGUI loginPage;
+
+    private JTable reservationsTable; // Tableau pour afficher les réservations
+    private DefaultTableModel reservationsTableModel; // Modèle pour le tableau des réservations
+    private JPanel mainPanel; // Déclarez mainPanel comme variable de classe
+    private JPanel reservationsPanel;
 
     public ReservationGUI() {
         setTitle("Réserver un Vol");
@@ -37,7 +45,7 @@ public class ReservationGUI extends JFrame { // class is here
         setLayout(new BorderLayout());
 
         createNavBar();
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel = new JPanel(new BorderLayout(10, 10)); // Correction: utilise la variable de classe
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         createSearchPanel(mainPanel);
         createResultTable(mainPanel);
@@ -54,10 +62,102 @@ public class ReservationGUI extends JFrame { // class is here
         for (String item : menuItems) {
             JButton btn = createNavButton(item);
             navBar.add(btn);
+            if (item.equals("Connexion")) {
+                btn.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Méthode appelée lorsque le bouton "Connexion" est cliqué
+                        openLoginPage();
+                    }
+                });
+            } else if (item.equals("Voir réservation")) {
+                btn.addActionListener(e -> showUserReservations());
+            }
         }
 
         add(navBar, BorderLayout.NORTH);
     }
+
+    private void showUserReservations() {
+        if (Session.userId == -1) {
+            JOptionPane.showMessageDialog(this, "Vous devez être connecté pour voir vos réservations.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Supprimer le contenu actuel du mainPanel
+        mainPanel.removeAll();
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        // Créer un tableau pour afficher les réservations
+        reservationsTableModel = new DefaultTableModel(
+                new Object[]{"ID Réservation", "ID Vol", "Date Réservation", "Statut"}, 0
+        );
+        reservationsTable = new JTable(reservationsTableModel);
+        JScrollPane scrollPane = new JScrollPane(reservationsTable);
+
+        // Charger les réservations de l'utilisateur
+        loadUserReservations();
+
+        // Créer un bouton pour revenir à la recherche de vols
+        JButton backButton = new JButton("Retour à la recherche de vols");
+        styleButton(backButton);
+        backButton.addActionListener(e -> showFlightSearch());
+
+        // Ajouter le tableau et le bouton à un nouveau panneau
+        reservationsPanel = new JPanel(new BorderLayout());  // Initialisation de reservationsPanel
+        reservationsPanel.add(scrollPane, BorderLayout.CENTER);
+        reservationsPanel.add(backButton, BorderLayout.SOUTH);
+
+        // Ajouter le panneau au mainPanel
+        mainPanel.add(reservationsPanel, BorderLayout.CENTER);
+
+        // Rafraîchir l'affichage
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+    private void loadUserReservations() {
+        List<Reservation> reservations = ReservationDAO.getReservationsByUserId(Session.userId);
+
+        System.out.println("Nombre de réservations récupérées : " + reservations.size()); // Ajout pour débogage
+
+        for (Reservation reservation : reservations) {
+            reservationsTableModel.addRow(new Object[]{
+                    reservation.getId(), // Correction : utilise l'ID de la réservation
+                    reservation.getFlightId(),
+                    reservation.getReservationDate(),
+                    reservation.getStatus()
+            });
+        }
+    }
+
+
+    private void showFlightSearch() {
+        // Supprimer le contenu actuel du mainPanel
+        mainPanel.removeAll();
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        // Recréer et ajouter les panneaux de recherche et de résultats
+        createSearchPanel(mainPanel);
+        createResultTable(mainPanel);
+
+        // Rafraîchir l'affichage
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+
+    private void openLoginPage() {
+        // Vérifiez si la page de login existe déjà
+        if (loginPage == null) {
+            loginPage = new LoginGUI(); // Utilise le constructeur par défaut de LoginGUI
+        }
+        loginPage.setVisible(true); // Affiche la page de login
+        this.dispose(); // Ferme la fenêtre actuelle (ReservationGUI)
+    }
+
 
     private JButton createNavButton(String text) {
         JButton button = new JButton(text);
@@ -86,8 +186,8 @@ public class ReservationGUI extends JFrame { // class is here
         JPanel searchPanel = new JPanel(new GridBagLayout());
         searchPanel.setBackground(java.awt.Color.WHITE);
         searchPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(java.awt.Color.LIGHT_GRAY),
-            BorderFactory.createEmptyBorder(20, 20, 20, 20)
+                BorderFactory.createLineBorder(java.awt.Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -116,8 +216,8 @@ public class ReservationGUI extends JFrame { // class is here
 
     private void createResultTable(JPanel mainPanel) {
         tableModel = new DefaultTableModel(
-            new Object[]{"ID", "Départ", "Arrivée", "Date Départ", "Date Arrivée", "Durée", "Réserver"},
-            0
+                new Object[]{"ID", "Départ", "Arrivée", "Date Départ", "Date Arrivée", "Durée", "Réserver"},
+                0
         );
         volsTable = new JTable(tableModel);
 
@@ -141,7 +241,7 @@ public class ReservationGUI extends JFrame { // class is here
     }
 
     private void addLabelAndField(JPanel panel, GridBagConstraints gbc, String labelText,
-                                JComponent field, int position) {
+                                 JComponent field, int position) {
         gbc.gridx = position % 2;
         gbc.gridy = position / 2 * 2;
 
@@ -174,13 +274,13 @@ public class ReservationGUI extends JFrame { // class is here
 
         for (Vol vol : vols) {
             tableModel.addRow(new Object[]{
-                vol.getId(),
-                vol.getLieuDepart(),
-                vol.getLieuArrivee(),
-                vol.getDateDepart().format(formatter),
-                vol.getDateArrivee().format(formatter),
-                vol.getDureeVol() + " min",
-                "Réserver"
+                    vol.getId(),
+                    vol.getLieuDepart(),
+                    vol.getLieuArrivee(),
+                    vol.getDateDepart().format(formatter),
+                    vol.getDateArrivee().format(formatter),
+                    vol.getDureeVol() + " min",
+                    "Réserver"
             });
         }
     }
@@ -193,7 +293,7 @@ public class ReservationGUI extends JFrame { // class is here
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
             return this;
         }
     }
@@ -220,7 +320,7 @@ public class ReservationGUI extends JFrame { // class is here
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
+                                                     boolean isSelected, int row, int column) {
             return button;
         }
 
@@ -233,13 +333,13 @@ public class ReservationGUI extends JFrame { // class is here
     private void reserverVol(int flightId) {
         if (Session.userId == -1) {
             JOptionPane.showMessageDialog(this, "Vous devez être connecté pour réserver.",
-                "Erreur", JOptionPane.ERROR_MESSAGE);
+                    "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         int confirmation = JOptionPane.showConfirmDialog(this,
-            "Confirmez-vous la réservation ?", "Confirmation",
-            JOptionPane.OK_CANCEL_OPTION);
+                "Confirmez-vous la réservation ?", "Confirmation",
+                JOptionPane.OK_CANCEL_OPTION);
 
         if (confirmation == JOptionPane.OK_OPTION) {
             boolean success = ReservationDAO.createReservation(flightId);
@@ -260,8 +360,8 @@ public class ReservationGUI extends JFrame { // class is here
                         } catch (DocumentException | IOException ex) {
                             ex.printStackTrace();
                             JOptionPane.showMessageDialog(ReservationGUI.this,
-                                "Erreur lors de la création du PDF.", "Erreur",
-                                JOptionPane.ERROR_MESSAGE);
+                                    "Erreur lors de la création du PDF.", "Erreur",
+                                    JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 });
@@ -269,10 +369,10 @@ public class ReservationGUI extends JFrame { // class is here
                 messagePane.add(downloadButton);
 
                 JOptionPane.showMessageDialog(this, messagePane, "Succès",
-                    JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "Erreur lors de la réservation.",
-                    "Erreur", JOptionPane.ERROR_MESSAGE);
+                        "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -397,6 +497,7 @@ public class ReservationGUI extends JFrame { // class is here
     }
 
     public static void main(String[] args) {
+       Session.userId = 1; //Temporaire pour le test
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

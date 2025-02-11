@@ -1,8 +1,3 @@
-import java.time.LocalDate;
-
-/**
- * Classe représentant une réservation de vol.
- */
 class Reservation {
     private int id;
     private int userId;
@@ -16,13 +11,14 @@ class Reservation {
         this.reservationDate = reservationDate;
         this.status = status;
     }
-
     // Getters
+    public int getId() { return id; } // Ajout du getter pour l'ID
     public int getUserId() { return userId; }
     public int getFlightId() { return flightId; }
     public String getReservationDate() { return reservationDate; }
     public String getStatus() { return status; }
 
+    public void setId(int id) { this.id = id; } // Setter pour l'ID
 
     @Override
     public String toString() {

@@ -98,4 +98,30 @@ public class ReservationDAO {
 
         return vol;
     }
+    
+    public static List<Reservation> getReservationsByUserId(int userId) {
+        List<Reservation> reservations = new ArrayList<>();
+        String query = "SELECT id, user_id, flight_id, reservation_date, status FROM reservations WHERE user_id = ?"; //Sélectionner l'ID!
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Reservation reservation = new Reservation(
+                    rs.getInt("user_id"),
+                    rs.getInt("flight_id"),
+                    rs.getDate("reservation_date").toString(), // Conversion de Date à String
+                    rs.getString("status")
+                );
+                reservation.setId(rs.getInt("id")); // Définir l'ID de la réservation ici!
+                reservations.add(reservation);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservations;
+    }
 }
