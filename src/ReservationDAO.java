@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,7 +102,11 @@ public class ReservationDAO {
     
     public static List<Reservation> getReservationsByUserId(int userId) {
         List<Reservation> reservations = new ArrayList<>();
-        String query = "SELECT id, user_id, flight_id, reservation_date, status FROM reservations WHERE user_id = ?"; //Sélectionner l'ID!
+        String query = "SELECT r.id AS reservation_id, r.flight_id, r.reservation_date, r.status, " +
+                       "v.lieu_depart, v.lieu_arrivee, v.date_depart, v.date_arrivee, r.user_id " + // Ajout de r.user_id
+                       "FROM reservations r " +
+                       "INNER JOIN vols v ON r.flight_id = v.id " +
+                       "WHERE r.user_id = ?";
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -111,12 +116,16 @@ public class ReservationDAO {
 
             while (rs.next()) {
                 Reservation reservation = new Reservation(
-                    rs.getInt("user_id"),
+                    rs.getInt("user_id"), // Utiliser la valeur correcte de user_id
                     rs.getInt("flight_id"),
-                    rs.getDate("reservation_date").toString(), // Conversion de Date à String
-                    rs.getString("status")
+                    rs.getDate("reservation_date").toString(),
+                    rs.getString("status"),
+                    rs.getString("lieu_depart"),
+                    rs.getString("lieu_arrivee"),
+                    rs.getTimestamp("date_depart").toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")), // Formatage de la date
+                    rs.getTimestamp("date_arrivee").toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) // Formatage de la date
                 );
-                reservation.setId(rs.getInt("id")); // Définir l'ID de la réservation ici!
+                reservation.setId(rs.getInt("reservation_id")); // Utilise reservation_id
                 reservations.add(reservation);
             }
         } catch (SQLException e) {

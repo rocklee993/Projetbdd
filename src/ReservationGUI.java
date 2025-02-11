@@ -58,7 +58,7 @@ public class ReservationGUI extends JFrame { // class is here
         JPanel navBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         navBar.setBackground(primaryColor);
 
-        String[] menuItems = {"Réserver", "Voir réservation", "Connexion"};
+        String[] menuItems = {"Voir réservation", "Connexion"};
         for (String item : menuItems) {
             JButton btn = createNavButton(item);
             navBar.add(btn);
@@ -91,7 +91,7 @@ public class ReservationGUI extends JFrame { // class is here
 
         // Créer un tableau pour afficher les réservations
         reservationsTableModel = new DefaultTableModel(
-                new Object[]{"ID Réservation", "ID Vol", "Date Réservation", "Statut"}, 0
+            new Object[]{"ID Réservation", "Départ", "Arrivée", "Date Départ", "Date Arrivée", "Statut"}, 0
         );
         reservationsTable = new JTable(reservationsTableModel);
         JScrollPane scrollPane = new JScrollPane(reservationsTable);
@@ -124,10 +124,12 @@ public class ReservationGUI extends JFrame { // class is here
 
         for (Reservation reservation : reservations) {
             reservationsTableModel.addRow(new Object[]{
-                    reservation.getId(), // Correction : utilise l'ID de la réservation
-                    reservation.getFlightId(),
-                    reservation.getReservationDate(),
-                    reservation.getStatus()
+                reservation.getId(),
+                reservation.getLieuDepart(),
+                reservation.getLieuArrivee(),
+                reservation.getDateDepart(),
+                reservation.getDateArrivee(),
+                reservation.getStatus()
             });
         }
     }
@@ -390,32 +392,31 @@ public class ReservationGUI extends JFrame { // class is here
         String filePath = USER_HOME + File.separator + "Downloads" + File.separator + fileName;
 
         Document document = new Document();
-
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(filePath));
         document.open();
 
-        //*** PDF DESIGN START***
+        // *** PDF DESIGN START ***
 
         // 1. Metadata
-
-        document.addTitle("Reservation Details");
+        document.addTitle("Flight Reservation Details");
         document.addSubject("Flight Reservation");
         document.addKeywords("flight, reservation, ticket");
-        document.addAuthor("Your Company Name"); //Replace with your own
+        document.addAuthor("Your Company Name"); // Replace with your own
 
         // 2. Fonts and Colors
-
-        BaseColor primaryColor = new BaseColor(0, 206, 209); // Turquoise (iText's BaseColor)
-        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, primaryColor);
-        Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
-        Font contentFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.DARK_GRAY);
+        BaseColor primaryColor = new BaseColor(0, 150, 136); // Teal (plus foncé et plus moderne)
+        BaseColor secondaryColor = new BaseColor(255, 255, 255); // Blanc
+        BaseColor textColor = new BaseColor(51, 51, 51); // Gris foncé
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 24, primaryColor); // Titre plus grand
+        Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, secondaryColor); // En-têtes blancs sur fond coloré
+        Font contentFont = FontFactory.getFont(FontFactory.HELVETICA, 12, textColor);
+        Font smallItalic = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, textColor); // Pour le pied de page
 
         // 3. Logo (replace "path/to/your/logo.png" with the actual path)
-
         try {
             String imagePath = "C:\\Users\\badr4\\OneDrive\\Bureau\\hhh.jpg"; // put your path here
             File imageFile = new File(imagePath);
-            if (imageFile.exists()) { // Check if file exist
+            if (imageFile.exists()) { // Check if file exists
                 Image logo = Image.getInstance(imagePath);
 
                 logo.scaleToFit(100, 100); // Adjust size as needed
@@ -428,36 +429,45 @@ public class ReservationGUI extends JFrame { // class is here
         }
 
         // 4. Title
-
         Paragraph title = new Paragraph("Flight Reservation Details", titleFont);
         title.setAlignment(Element.ALIGN_CENTER);
-        title.setSpacingBefore(10);
+        title.setSpacingBefore(20);
         document.add(title);
 
-        // 5. Table
-
+        // 5. Reservation Info Table
         PdfPTable table = new PdfPTable(2); // 2 columns
-        table.setWidthPercentage(100); // Table takes up the whole page width
-        table.setSpacingBefore(10);
+        table.setWidthPercentage(80); // Table takes up 80% of the page width (plus esthétique)
+        table.setHorizontalAlignment(Element.ALIGN_CENTER); // Centrer la table
+        table.setSpacingBefore(20);
+        table.getDefaultCell().setBorder(0); // Supprimer les bordures par défaut des cellules
+
+        // Configuration des couleurs pour les cellules
+        PdfPCell headerCell = new PdfPCell();
+        headerCell.setBackgroundColor(primaryColor);
+        headerCell.setPadding(5);
+
+        PdfPCell contentCell = new PdfPCell();
+        contentCell.setPadding(5);
+        contentCell.setBorder(0); // Enlever les bordures des cellules de contenu
 
         //Add headers to table
-        addTableHeader(table, headerFont);
+        addTableHeader(table, headerFont, headerCell);
 
         //Add cells to table
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        addTableCell(table, "Flight ID", String.valueOf(vol.getId()), contentFont);
-        addTableCell(table, "Departure", vol.getLieuDepart(), contentFont);
-        addTableCell(table, "Arrival", vol.getLieuArrivee(), contentFont);
-        addTableCell(table, "Departure Date", vol.getDateDepart().format(formatter), contentFont);
-        addTableCell(table, "Arrival Date", vol.getDateArrivee().format(formatter), contentFont);
-        addTableCell(table, "Flight Duration", vol.getDureeVol() + " min", contentFont);
+        //On n'affiche plus l'ID du vol
+        addTableCell(table, "Departure", vol.getLieuDepart(), contentFont, contentCell);
+        addTableCell(table, "Arrival", vol.getLieuArrivee(), contentFont, contentCell);
+        addTableCell(table, "Departure Date", vol.getDateDepart().format(formatter), contentFont, contentCell);
+        addTableCell(table, "Arrival Date", vol.getDateArrivee().format(formatter), contentFont, contentCell);
+        addTableCell(table, "Flight Duration", vol.getDureeVol() + " min", contentFont, contentCell);
 
         document.add(table);
-        // 6. Footer
 
-        Paragraph footer = new Paragraph("Thank you for flying with us!", contentFont);
+        // 6. Footer
+        Paragraph footer = new Paragraph("Thank you for flying with us!", smallItalic); // Police plus petite et italique
         footer.setAlignment(Element.ALIGN_CENTER);
-        footer.setSpacingBefore(30);
+        footer.setSpacingBefore(50);
         document.add(footer);
 
         // ***PDF DESIGN END***
@@ -469,31 +479,23 @@ public class ReservationGUI extends JFrame { // class is here
     }
 
     // Helper method to add table header
-    private void addTableHeader(PdfPTable table, Font font) {
-        PdfPCell header = new PdfPCell();
-        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
-        header.setBorderWidth(2);
-        header.setPhrase(new Phrase("Detail", font));
-        table.addCell(header);
+    private void addTableHeader(PdfPTable table, Font font, PdfPCell headerCell) {
 
-        header = new PdfPCell(); // Reset header
-        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
-        header.setBorderWidth(2);
-        header.setPhrase(new Phrase("Value", font));
-        table.addCell(header);
+        headerCell.setPhrase(new Phrase("Detail", font));
+        table.addCell(headerCell);
+
+        headerCell.setPhrase(new Phrase("Value", font));
+        table.addCell(headerCell);
     }
 
     // Helper method to add a table cell
-    private void addTableCell(PdfPTable table, String header, String value, Font font) {
-        PdfPCell cellHeader = new PdfPCell(new Phrase(header, font));
-        cellHeader.setPaddingLeft(5);
-        cellHeader.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        table.addCell(cellHeader);
+    private void addTableCell(PdfPTable table, String header, String value, Font font, PdfPCell cell) {
 
-        PdfPCell cellValue = new PdfPCell(new Phrase(value, font));
-        cellValue.setPaddingLeft(5);
-        cellValue.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        table.addCell(cellValue);
+        cell.setPhrase(new Phrase(header, font));
+        table.addCell(cell);
+
+        cell.setPhrase(new Phrase(value, font));
+        table.addCell(cell);
     }
 
     public static void main(String[] args) {
