@@ -3,11 +3,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * The SignupGUI class represents the graphical user interface for user registration.
- * It allows a user to input their personal details (first name, last name, email, password),
- * validate the data, and register by interacting with the interface.
- */
 public class SignupGUI extends JFrame {
     // Declare input fields and other components
     private JTextField firstNameField;
@@ -16,11 +11,8 @@ public class SignupGUI extends JFrame {
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
     private JTextArea outputArea;
+    private Color primaryColor = new Color(0, 206, 209); // Turquoise
 
-    /**
-     * Constructor for the SignupGUI class. It initializes the window layout, including the header,
-     * form fields for user input, a sign-up button, and an output area for displaying results or errors.
-     */
     public SignupGUI() {
         setTitle("S'inscrire");
         setSize(500, 500);
@@ -30,14 +22,15 @@ public class SignupGUI extends JFrame {
 
         // Header Panel
         JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(Color.CYAN);
+        headerPanel.setBackground(primaryColor);
         JLabel titleLabel = new JLabel("Inscription");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setForeground(Color.WHITE);
         headerPanel.add(titleLabel);
 
-        // Main Panel with Grey Background
+        // Main Panel
         JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
-        panel.setBackground(Color.LIGHT_GRAY);
+        panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Creating Labels and Input Fields
@@ -63,31 +56,24 @@ public class SignupGUI extends JFrame {
 
         // Button Panel
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.LIGHT_GRAY);
+        buttonPanel.setBackground(Color.WHITE);
 
-        JButton signupButton = new JButton("S'inscrire");
-        signupButton.setBackground(new Color(66, 135, 245));
-        signupButton.setForeground(Color.WHITE);
-        signupButton.setPreferredSize(new Dimension(200, 40));
+        JButton signupButton = createStyledButton("S'inscrire", primaryColor);
+        JButton loginButton = createStyledButton("Se connecter", new Color(245, 66, 66));
+
         buttonPanel.add(signupButton);
+        buttonPanel.add(loginButton);
 
         // Output Area
         outputArea = new JTextArea(3, 30);
         outputArea.setEditable(false);
-        outputArea.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        outputArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
         // Bottom Panel
         JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setBackground(Color.LIGHT_GRAY);
+        bottomPanel.setBackground(Color.WHITE);
         bottomPanel.add(buttonPanel, BorderLayout.NORTH);
         bottomPanel.add(new JScrollPane(outputArea), BorderLayout.CENTER);
-
-        // "Se connecter" Button to return to LoginGUI
-        JButton loginButton = new JButton("Se connecter");
-        loginButton.setPreferredSize(new Dimension(200, 40));
-        loginButton.setBackground(new Color(245, 66, 66));
-        loginButton.setForeground(Color.WHITE);
-        buttonPanel.add(loginButton); // Add the login button to the button panel
 
         // Add Components to Frame
         setLayout(new BorderLayout());
@@ -95,31 +81,36 @@ public class SignupGUI extends JFrame {
         add(panel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // Button Action
-        signupButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                signupAction();
-            }
-        });
-
-        // Action listener for the "Se connecter" button
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new LoginGUI(); // Open LoginGUI
-                dispose(); // Close SignupGUI
-            }
+        // Button Actions
+        signupButton.addActionListener(e -> signupAction());
+        loginButton.addActionListener(e -> {
+            new LoginGUI(); // Open LoginGUI
+            dispose(); // Close SignupGUI
         });
 
         setVisible(true);
     }
 
-    /**
-     * Action performed when the user clicks the sign-up button.
-     * This method validates the input fields, checks if passwords match, validates email format,
-     * and calls the SignupDAO to attempt registering the user.
-     */
+    private JButton createStyledButton(String text, Color color) {
+        JButton button = new JButton(text);
+        button.setBackground(color);
+        button.setForeground(Color.WHITE);
+        button.setPreferredSize(new Dimension(200, 40));
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(color.darker());
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(color);
+            }
+        });
+        return button;
+    }
+
     private void signupAction() {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
@@ -161,12 +152,6 @@ public class SignupGUI extends JFrame {
         }
     }
 
-    /**
-     * Main method to launch the SignupGUI application.
-     * Creates a new instance of the SignupGUI class to display the registration interface.
-     *
-     * @param args command-line arguments (not used)
-     */
     public static void main(String[] args) {
         new SignupGUI(); // Launch the GUI application
     }
