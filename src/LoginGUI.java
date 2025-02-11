@@ -30,16 +30,10 @@ public class LoginGUI extends JFrame {
         // Creating Labels and Input Fields
         panel.add(new JLabel("Email:"));
         emailField = new JTextField();
-        emailField.setBackground(Color.WHITE);
-        emailField.setFont(new Font("Arial", Font.PLAIN, 12));
-        emailField.setPreferredSize(new Dimension(200, 30));
         panel.add(emailField);
 
         panel.add(new JLabel("Mot de passe:"));
         passwordField = new JPasswordField();
-        passwordField.setBackground(Color.WHITE);
-        passwordField.setFont(new Font("Arial", Font.PLAIN, 12));
-        passwordField.setPreferredSize(new Dimension(200, 30));
         panel.add(passwordField);
 
         // Button Panel
@@ -50,7 +44,14 @@ public class LoginGUI extends JFrame {
         loginButton.setBackground(new Color(66, 135, 245));
         loginButton.setForeground(Color.WHITE);
         loginButton.setPreferredSize(new Dimension(200, 40));
+
+        JButton signupButton = new JButton("Créer un compte"); // Sign Up Button
+        signupButton.setBackground(Color.GREEN);
+        signupButton.setForeground(Color.WHITE);
+        signupButton.setPreferredSize(new Dimension(200, 40));
+
         buttonPanel.add(loginButton);
+        buttonPanel.add(signupButton);
 
         // Output Area
         outputArea = new JTextArea(3, 30);
@@ -69,11 +70,19 @@ public class LoginGUI extends JFrame {
         add(panel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // Button Action
+        // Button Actions
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 loginAction();
+            }
+        });
+
+        signupButton.addActionListener(new ActionListener() { // Sign Up Button Action
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new SignupGUI(); // Open SignupGUI
+                dispose(); // Close LoginGUI
             }
         });
 

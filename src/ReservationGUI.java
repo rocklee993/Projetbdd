@@ -137,7 +137,7 @@ public class ReservationGUI extends JFrame {
         return new Person(1, "John", "Doe", "john.doe@example.com", "password123");
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         new ReservationGUI();
-    }
+    }*/
 }

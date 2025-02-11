@@ -30,37 +30,22 @@ public class SignupGUI extends JFrame {
         // Creating Labels and Input Fields
         panel.add(new JLabel("Prénom:"));
         firstNameField = new JTextField();
-        firstNameField.setBackground(Color.WHITE);
-        firstNameField.setFont(new Font("Arial", Font.PLAIN, 12));
-        firstNameField.setPreferredSize(new Dimension(200, 30));
         panel.add(firstNameField);
 
         panel.add(new JLabel("Nom:"));
         lastNameField = new JTextField();
-        lastNameField.setBackground(Color.WHITE);
-        lastNameField.setFont(new Font("Arial", Font.PLAIN, 12));
-        lastNameField.setPreferredSize(new Dimension(200, 30));
         panel.add(lastNameField);
 
         panel.add(new JLabel("Email:"));
         emailField = new JTextField();
-        emailField.setBackground(Color.WHITE);
-        emailField.setFont(new Font("Arial", Font.PLAIN, 12));
-        emailField.setPreferredSize(new Dimension(200, 30));
         panel.add(emailField);
 
         panel.add(new JLabel("Mot de passe:"));
         passwordField = new JPasswordField();
-        passwordField.setBackground(Color.WHITE);
-        passwordField.setFont(new Font("Arial", Font.PLAIN, 12));
-        passwordField.setPreferredSize(new Dimension(200, 30));
         panel.add(passwordField);
 
         panel.add(new JLabel("Confirmer mot de passe:"));
         confirmPasswordField = new JPasswordField();
-        confirmPasswordField.setBackground(Color.WHITE);
-        confirmPasswordField.setFont(new Font("Arial", Font.PLAIN, 12));
-        confirmPasswordField.setPreferredSize(new Dimension(200, 30));
         panel.add(confirmPasswordField);
 
         // Button Panel
@@ -126,14 +111,20 @@ public class SignupGUI extends JFrame {
 
         // Check if registration was successful
         if (success) {
-            outputArea.setText("✅ Inscription réussie!");
+            outputArea.setText("✅ Inscription réussie! Redirection...");
+
+            // Delay for 1.5 seconds before switching to LoginGUI
+            Timer timer = new Timer(1500, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new LoginGUI(); // Open LoginGUI
+                    dispose(); // Close SignupGUI
+                }
+            });
+            timer.setRepeats(false);
+            timer.start();
         } else {
             outputArea.setText("❌ L'email est déjà utilisé.");
         }
-    }
-
-
-    public static void main(String[] args) {
-        new SignupGUI();
     }
 }
