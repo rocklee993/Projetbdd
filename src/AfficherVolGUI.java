@@ -129,11 +129,7 @@ public class AfficherVolGUI extends JFrame {
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
-        JButton exportButton = new JButton("Exporter en PDF");
-        styleButton(exportButton);
-        exportButton.setBackground(new Color(46, 125, 50));  // Green color
-        searchPanel.add(Box.createHorizontalStrut(20));  // Add some spacing
-        searchPanel.add(exportButton);
+        
 
         mainPanel.add(searchPanel, BorderLayout.NORTH);
     }
