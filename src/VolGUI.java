@@ -57,6 +57,7 @@ public class VolGUI extends JFrame {
         JButton addButton = new JButton("Ajouter");
         JButton editButton = new JButton("Modifier");
         JButton deleteButton = new JButton("Supprimer");
+        JButton afficherButton = new JButton("Afficher Vols"); // New button
 
         addButton.setBackground(new Color(66, 135, 245));
         addButton.setForeground(Color.WHITE);
@@ -64,10 +65,13 @@ public class VolGUI extends JFrame {
         editButton.setForeground(Color.WHITE);
         deleteButton.setBackground(new Color(220, 20, 60));
         deleteButton.setForeground(Color.WHITE);
+        afficherButton.setBackground(new Color(34, 139, 34)); // Green background
+        afficherButton.setForeground(Color.WHITE);
 
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
+        buttonPanel.add(afficherButton); // Add the new button
 
         // Output Area
         outputArea = new JTextArea(10, 40);
@@ -90,6 +94,7 @@ public class VolGUI extends JFrame {
         addButton.addActionListener(e -> createVol());
         editButton.addActionListener(e -> modifyVol());
         deleteButton.addActionListener(e -> deleteVol());
+        afficherButton.addActionListener(e -> refreshVolsList()); // ActionListener for "Afficher Vols"
 
         refreshVolsList(); // Display existing flights on startup
 
@@ -159,7 +164,6 @@ public class VolGUI extends JFrame {
             outputArea.setText("❌ Erreur: Vérifiez vos entrées.");
         }
     }
-
 
     private void deleteVol() {
         try {
