@@ -1,41 +1,35 @@
-public class Reservation {
-    private int reservationId;
-    private Person user; // the user who made the reservation
-    private Vol vol; // the flight associated with the reservation
-    private String status; // e.g., "Booked", "Checked In", etc.
+import java.time.LocalDate;
 
-    public Reservation(int reservationId, Person user, Vol vol) {
-        this.reservationId = reservationId;
-        this.user = user;
-        this.vol = vol;
-        this.status = "Booked"; // Initial status is 'Booked'
-    }
+/**
+ * Classe représentant une réservation de vol.
+ */
+class Reservation {
+    private int id;
+    private int userId;
+    private int flightId;
+    private String reservationDate;
+    private String status;
 
-    public int getReservationId() {
-        return reservationId;
-    }
-
-    public Person getUser() {
-        return user;
-    }
-
-    public Vol getVol() {
-        return vol;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
+    public Reservation(int userId, int flightId, String reservationDate, String status) {
+        this.userId = userId;
+        this.flightId = flightId;
+        this.reservationDate = reservationDate;
         this.status = status;
     }
 
+    // Getters
+    public int getUserId() { return userId; }
+    public int getFlightId() { return flightId; }
+    public String getReservationDate() { return reservationDate; }
+    public String getStatus() { return status; }
+
+
     @Override
     public String toString() {
-        return "Reservation ID: " + reservationId + "\n" +
-               "User: " + user.getPrenom() + " " + user.getNom() + "\n" +
-               "Flight: " + vol.getId() + "\n" +
-               "Status: " + status;
+        return "Reservation [id=" + id + 
+               ", userId=" + userId + 
+               ", flightId=" + flightId + 
+               ", reservationDate=" + reservationDate + 
+               ", status=" + status + "]";
     }
 }

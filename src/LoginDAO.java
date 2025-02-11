@@ -13,8 +13,8 @@ public class LoginDAO {
 
     // Method to verify user login
     public static String verifyUser(String email, String password) {
-        String query = "SELECT * FROM users WHERE email = ? AND password = ?";
-        
+        String query = "SELECT id FROM users WHERE email = ? AND password = ?";
+
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
@@ -23,15 +23,18 @@ public class LoginDAO {
 
             ResultSet resultSet = stmt.executeQuery();
 
-            if (resultSet.next()) {  // If a row is found, login is valid
+            if (resultSet.next()) {  
+                int userId = resultSet.getInt("id");
+                Session.userId = userId;  // Stocke l'ID du user connecté
+
                 if (email.equalsIgnoreCase("admin@uha.fr")) {
-                    return "admin";  // Return admin role
+                    return "admin";  
                 }
-                return "user";  // Return normal user role
+                return "user";  
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "invalid";  // Return invalid if login fails
+        return "invalid";  
     }
 }
