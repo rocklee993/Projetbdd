@@ -2,6 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 public class SignupGUI extends JFrame {
     // Declare input fields and other components
@@ -20,18 +24,36 @@ public class SignupGUI extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
+        // Main Panel with background image
+        JPanel mainPanel = new JPanel() {
+            private BufferedImage image;
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    image = ImageIO.read(new File("C:\\Users\\badr4\\OneDrive\\Bureau\\vol1.jpg"));  // Replace with your image path
+                    g.drawImage(image, 0, 0, getWidth(), getHeight(), this); // Scale image to fit the panel
+                } catch (IOException e) {
+                    System.err.println("Image introuvable: " + e.getMessage());
+                }
+            }
+        };
+        mainPanel.setLayout(new BorderLayout());
+
         // Header Panel
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(primaryColor);
         JLabel titleLabel = new JLabel("Inscription");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setForeground(Color.WHITE);
+        headerPanel.setOpaque(false); // Make header transparent
         headerPanel.add(titleLabel);
 
-        // Main Panel
+        // Input Panel
         JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
-        panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.setOpaque(false); // Make panel transparent
 
         // Creating Labels and Input Fields
         panel.add(new JLabel("Prénom:"));
@@ -56,7 +78,7 @@ public class SignupGUI extends JFrame {
 
         // Button Panel
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setOpaque(false); // Make panel transparent
 
         JButton signupButton = createStyledButton("S'inscrire", primaryColor);
         JButton loginButton = createStyledButton("Se connecter", new Color(245, 66, 66));
@@ -68,18 +90,25 @@ public class SignupGUI extends JFrame {
         outputArea = new JTextArea(3, 30);
         outputArea.setEditable(false);
         outputArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        outputArea.setOpaque(false); // Make transparent
 
         // Bottom Panel
         JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setBackground(Color.WHITE);
+        bottomPanel.setOpaque(false); // Make panel transparent
         bottomPanel.add(buttonPanel, BorderLayout.NORTH);
         bottomPanel.add(new JScrollPane(outputArea), BorderLayout.CENTER);
+        ((JComponent) bottomPanel.getComponent(1)).setOpaque(false);
+        ((JScrollPane) bottomPanel.getComponent(1)).getViewport().setOpaque(false);
+        
+
+        // Add Components
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(panel, BorderLayout.CENTER);
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         // Add Components to Frame
         setLayout(new BorderLayout());
-        add(headerPanel, BorderLayout.NORTH);
-        add(panel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
+        add(mainPanel, BorderLayout.CENTER);
 
         // Button Actions
         signupButton.addActionListener(e -> signupAction());

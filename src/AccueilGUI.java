@@ -51,7 +51,7 @@ public class AccueilGUI extends JFrame {
         // Configuration de la disposition avec GridBagLayout pour centrer les boutons
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(10, 0, 10, 0); // Marge autour des boutons
 
         backgroundPanel.add(inscriptionButton, gbc);
@@ -67,7 +67,7 @@ public class AccueilGUI extends JFrame {
         button.setPreferredSize(new Dimension(200, 50));
         button.setFont(new Font("Arial", Font.BOLD, 16));
         button.setForeground(Color.WHITE);
-        button.setBackground(new Color(0, 150, 136)); // Teal
+        button.setBackground(new Color(0, 110, 137)); // Teal
         button.setBorderPainted(false);
         button.setFocusPainted(false);
 
