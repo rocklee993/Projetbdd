@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn; // Import TableColumn
@@ -171,23 +172,75 @@ public class ReservationGUI extends JFrame {
         add(navBar, BorderLayout.NORTH);
     }
 
+ 
+
     private void showUserReservations() {
         if (Session.userId == -1) {
             JOptionPane.showMessageDialog(this, "Vous devez être connecté pour voir vos réservations.", "Erreur", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         mainPanel.removeAll();
         mainPanel.revalidate();
         mainPanel.repaint();
+
         reservationsTableModel = new DefaultTableModel(
-            new Object[]{"ID Réservation", "Départ", "Arrivée", "Date Départ", "Date Arrivée", "Statut"}, 0
+                new Object[]{"ID Réservation", "Départ", "Arrivée", "Date Départ", "Date Arrivée", "Statut", "Annuler"}, 0
         );
         reservationsTable = new JTable(reservationsTableModel);
         JScrollPane scrollPane = new JScrollPane(reservationsTable);
+
+        TableColumn annulerColumn = reservationsTable.getColumnModel().getColumn(6);
+
+        // Renderer anonyme pour afficher le bouton
+        annulerColumn.setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JButton button = new JButton("Annuler");
+                styleButton(button); // Appliquer le style au bouton
+                return button;
+            }
+        });
+
+        // Editeur de cellule anonyme pour gérer le clic sur le bouton
+        annulerColumn.setCellEditor(new DefaultCellEditor(new JCheckBox()) {
+            private JButton button;
+            private int selectedRow;
+            private int reservationId;
+
+            @Override
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+                button = new JButton("Annuler");
+                styleButton(button); // Appliquer le style au bouton
+
+                // ActionListener pour le bouton
+                button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        selectedRow = table.getSelectedRow();
+                        if (selectedRow != -1) {
+                            reservationId = (int) reservationsTableModel.getValueAt(selectedRow, 0);
+                            annulerReservation(reservationId);
+                            fireEditingStopped(); // Important: ferme l'éditeur
+                        } else {
+                            JOptionPane.showMessageDialog(ReservationGUI.this, "Veuillez sélectionner une réservation.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                });
+                return button;
+            }
+
+            @Override
+            public Object getCellEditorValue() {
+                return "Annuler";
+            }
+        });
+
         loadUserReservations();
         JButton backButton = new JButton("Retour à la recherche de vols");
         styleButton(backButton);
         backButton.addActionListener(e -> showFlightSearch());
+
         reservationsPanel = new JPanel(new BorderLayout());
         reservationsPanel.add(scrollPane, BorderLayout.CENTER);
         reservationsPanel.add(backButton, BorderLayout.SOUTH);
@@ -201,16 +254,36 @@ public class ReservationGUI extends JFrame {
         System.out.println("Nombre de réservations récupérées : " + reservations.size());
         for (Reservation reservation : reservations) {
             reservationsTableModel.addRow(new Object[]{
-                reservation.getId(),
-                reservation.getLieuDepart(),
-                reservation.getLieuArrivee(),
-                reservation.getDateDepart(),
-                reservation.getDateArrivee(),
-                reservation.getStatus()
+                    reservation.getId(),
+                    reservation.getLieuDepart(),
+                    reservation.getLieuArrivee(),
+                    reservation.getDateDepart(),
+                    reservation.getDateArrivee(),
+                    reservation.getStatus(),
+                    "Annuler" // Ajouter le texte "Annuler" pour le bouton
             });
         }
     }
 
+    private void annulerReservation(int reservationId) {
+        int confirmation = JOptionPane.showConfirmDialog(this,
+                "Confirmez-vous l'annulation de cette réservation ?", "Confirmation",
+                JOptionPane.OK_CANCEL_OPTION);
+
+        if (confirmation == JOptionPane.OK_OPTION) {
+            boolean success = ReservationDAO.annulerReservation(reservationId);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Réservation annulée avec succès !", "Succès",
+                        JOptionPane.INFORMATION_MESSAGE);
+                showUserReservations(); // Actualiser la table des réservations
+            } else {
+                JOptionPane.showMessageDialog(this, "Impossible de Annuler cette Reservation (-24h pour le départ)", "Erreur",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    
     private void showFlightSearch() {
         mainPanel.removeAll();
         mainPanel.revalidate();

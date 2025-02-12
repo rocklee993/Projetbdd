@@ -168,4 +168,71 @@ public class ReservationDAO {
         }
         return reservations; // Retourne la liste des réservations
     }
+    
+    /**
+     * Annule une réservation dans la base de données.
+     *
+     * @param reservationId L'ID de la réservation à annuler.
+     * @return true si la réservation a été annulée avec succès, false sinon.
+     */
+    public static boolean annulerReservation(int reservationId) {
+        // Vérifier si la réservation existe et si elle peut être annulée (date de départ > 24h)
+        if (!peutAnnulerReservation(reservationId)) {
+            System.out.println("⚠️ La réservation ne peut pas être annulée car le délai est dépassé.");
+            return false;
+        }
+
+        String query = "UPDATE reservations SET status = 'Annulée' WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, reservationId);
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("✅ Réservation annulée avec succès !");
+                return true;
+            } else {
+                System.out.println("⚠️ Aucune réservation trouvée avec cet ID.");
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur lors de l'annulation de la réservation : " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Vérifie si une réservation peut être annulée (date de départ > 24h).
+     *
+     * @param reservationId L'ID de la réservation à vérifier.
+     * @return true si la réservation peut être annulée, false sinon.
+     */
+    public static boolean peutAnnulerReservation(int reservationId) {
+        String query = "SELECT v.date_depart FROM reservations r INNER JOIN vols v ON r.flight_id = v.id WHERE r.id = ?";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, reservationId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                LocalDateTime dateDepart = rs.getTimestamp("date_depart").toLocalDateTime();
+                LocalDateTime maintenantPlus24h = LocalDateTime.now().plusHours(24);
+                return dateDepart.isAfter(maintenantPlus24h); // Vérifie si la date de départ est après maintenant + 24h
+            } else {
+                System.out.println("⚠️ Aucune réservation trouvée avec cet ID.");
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur lors de la vérification de la date de départ : " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    
+    
 }
