@@ -269,7 +269,7 @@ public class VolGUI extends JFrame {
         JPanel navBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)); // Crée un panneau avec un FlowLayout (alignement à gauche)
         navBar.setBackground(primaryColor); // Définit la couleur de fond de la barre de navigation
 
-        String[] menuItems = {"Gestion des Vols", "Afficher tous les vols", "Aceuil"}; // Les éléments du menu
+        String[] menuItems = {"Gestion des Vols", "Afficher tous les vols", "Acceuil"}; // Les éléments du menu
         for (String item : menuItems) { // Parcours les éléments du menu
             JButton btn = createNavButton(item); // Crée un bouton pour chaque élément
             if (item.equals("Afficher tous les vols")) {
@@ -278,7 +278,7 @@ public class VolGUI extends JFrame {
             navBar.add(btn); // Ajoute le bouton à la barre de navigation
 
             // Action listeners
-            if (item.equals("Aceuil")) {
+            if (item.equals("Acceuil")) {
                 btn.addActionListener(e -> Aceuil()); // Ajoute un ActionListener pour la déconnexion
             } else if (item.equals("Afficher tous les vols")) {
                 btn.addActionListener(e -> openVolGUI()); // Ajoute un ActionListener pour afficher tous les vols

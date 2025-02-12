@@ -46,7 +46,7 @@ public class AfficherVolGUI extends JFrame {
         JPanel navBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         navBar.setBackground(primaryColor);
 
-        String[] menuItems = {"Gestion des Vols", "Afficher tous les vols", "Déconnexion"};
+        String[] menuItems = {"Gestion des Vols", "Afficher tous les vols", "Acceuil"};
         for (String item : menuItems) {
             JButton btn = createNavButton(item);
             if (item.equals("Afficher tous les vols")) {
@@ -55,7 +55,7 @@ public class AfficherVolGUI extends JFrame {
             navBar.add(btn);
 
             // Action listeners
-            if (item.equals("Déconnexion")) {
+            if (item.equals("Acceuil")) {
                 btn.addActionListener(e -> logoutAction());
             } else if (item.equals("Gestion des Vols")) {
                 btn.addActionListener(e -> openVolGUI());

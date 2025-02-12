@@ -159,11 +159,11 @@ public class ReservationGUI extends JFrame {
         JPanel navBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         navBar.setBackground(primaryColor);
 
-        String[] menuItems = {"Voir réservation", "Aceuil"};
+        String[] menuItems = {"Voir réservation", "Acceuil"};
         for (String item : menuItems) {
             JButton btn = createNavButton(item);
             navBar.add(btn);
-            if (item.equals("Aceuil")) {
+            if (item.equals("Acceuil")) {
                 btn.addActionListener(e -> Aceuil());
             } else if (item.equals("Voir réservation")) {
                 btn.addActionListener(e -> showUserReservations());
