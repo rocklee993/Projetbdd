@@ -37,7 +37,7 @@ public class ReservationGUI extends JFrame {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private Color primaryColor = new Color(0, 206, 209);
     private static final String USER_HOME = System.getProperty("user.home");
-    private LoginGUI loginPage;
+    private AccueilGUI loginPage;
 
     private JTable reservationsTable;
     private DefaultTableModel reservationsTableModel;
@@ -159,12 +159,12 @@ public class ReservationGUI extends JFrame {
         JPanel navBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         navBar.setBackground(primaryColor);
 
-        String[] menuItems = {"Voir réservation", "Connexion"};
+        String[] menuItems = {"Voir réservation", "Aceuil"};
         for (String item : menuItems) {
             JButton btn = createNavButton(item);
             navBar.add(btn);
-            if (item.equals("Connexion")) {
-                btn.addActionListener(e -> openLoginPage());
+            if (item.equals("Aceuil")) {
+                btn.addActionListener(e -> Aceuil());
             } else if (item.equals("Voir réservation")) {
                 btn.addActionListener(e -> showUserReservations());
             }
@@ -294,9 +294,9 @@ public class ReservationGUI extends JFrame {
         mainPanel.repaint();
     }
 
-    private void openLoginPage() {
+    private void Aceuil() {
         if (loginPage == null) {
-            loginPage = new LoginGUI();
+            loginPage = new AccueilGUI();
         }
         loginPage.setVisible(true);
         this.dispose();
@@ -556,7 +556,7 @@ public class ReservationGUI extends JFrame {
 
     public static void main(String[] args) {
         Session.userId = 1;
-        SwingUtilities.invokeLater(() -> {
+  SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (Exception e) {
